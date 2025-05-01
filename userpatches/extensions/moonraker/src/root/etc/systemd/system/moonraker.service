@@ -1,0 +1,19 @@
+# systemd service file for moonraker
+[Unit]
+Description=API Server for Klipper
+Requires=network-online.target
+After=network-online.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=simple
+User=raven
+SupplementaryGroups=moonraker-admin
+RemainAfterExit=yes
+WorkingDirectory=/home/raven/moonraker/
+EnvironmentFile=/home/raven/printer_data/systemd/moonraker.env
+ExecStart=/home/raven/moonraker-env/bin/python -m moonraker $MOONRAKER_ARGS
+Restart=always
+RestartSec=10

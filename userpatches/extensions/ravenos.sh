@@ -9,21 +9,6 @@ enable_extension fluidd
 enable_extension mainsail
 enable_extension klipperscreen
 
-# case "$KLIPPER_FRONTEND" in
-# 	fluidd)
-# 		enable_extension fluidd
-# 		;;
-
-# 	mainsail)
-# 		enable_extension mainsail
-# 		;;
-
-# 	*)
-# 		exit_with_error "KLIPPER_FRONTEND must be one of [fluidd, mainsail]"
-# 		;;
-# esac
-
-
 function post_family_tweaks_bsp__remove_armbian_firstlogin() {
 	display_alert "Extension: ${EXTENSION}: Removing armbian firstlogin"
 
@@ -38,6 +23,8 @@ function post_family_tweaks__create_raven_user() {
 	chroot_sdcard groupadd --gid 1000 raven
 	chroot_sdcard adduser --quiet --disabled-password --uid 1000 --gid 1000 --shell /bin/bash --home /home/raven --gecos raven raven
 	chroot_sdcard '(echo raven; echo raven) | passwd raven'
+
+	chroot_sdcard 'su raven -c "cd /home/raven; mkdir -p printer_data/backup printer_data/certs printer_data/comms printer_data/config printer_data/database printer_data/gcodes printer_data/logs"'
 
 	chroot_sdcard 'echo "nameserver 1.1.1.1" >> /etc/resolv.conf'
 }

@@ -34,4 +34,12 @@ function pre_customize_image__install_klipper() {
 	display_alert "Extension $EXTENSION: Cloning klipper virtualenv"
 	chroot_sdcard "su $USERNAME -l -c 'python3 -m venv /home/$USERNAME/klippy-env'"
 	chroot_sdcard "su $USERNAME -c '/home/$USERNAME/klippy-env/bin/pip install -r /home/$USERNAME/klipper/scripts/klippy-requirements.txt'"
+
+	run_host_command_logged rsync -aHWXhR "$EXTENSION_DIR"/src/root/./ "${SDCARD}"/
+}
+
+function post_customize_image__enable_klipper() {
+	display_alert "Extension $EXTENSION: Enabling $klipper_variant"
+
+	chroot_sdcard systemctl enable klipper.service
 }

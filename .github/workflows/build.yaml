@@ -1,38 +1,50 @@
 name: "Build RavenOS"
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [main]
 
 jobs:
   build:
     strategy:
       matrix:
+        klipper_variant:
+          - klipper
+          - kalico
+
         board:
-            - uefi-x86
-            - rpi4b
-            - bigtreetech-cb1
-            - bigtreetech-cb2
+          - uefi-x86
+          - rpi4b
+          - bigtreetech-cb1
+          - bigtreetech-cb2
 
     runs-on: ubuntu-latest
     steps:
-        - uses: actions/checkout@v4
-          with:
-            submodules: true
-      
-        - name: Setup our userpatches
-          run: |
-            rm -rf $(pwd)/build/userpatches
-            ln -sf $(pwd)/userpatches $(pwd)/build/userpatches
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
 
-        - name: Build for ${{ matrix.board }}
-          run: |
-            cd build
-            
-            ./compile.sh ravenos \
-                BOARD="${{ matrix.board }}" \
-                COMPRESS_OUTPUTIMAGE=sha,img,xz
-        
-        - uses: actions/upload-artifact@v4
-          with:
-            name: ${{ matrix.board }}
-            path: build/output/images/*
+      - uses: actions/cache@v4
+        with:
+          key: ${{ matrix.board }}
+          path: |
+            build/cache
+            build/output/debs
+            build/output/packages-hashed
+
+      - name: Setup our userpatches
+        run: |
+          rm -rf $(pwd)/build/userpatches
+          ln -sf $(pwd)/userpatches $(pwd)/build/userpatches
+
+      - name: Build for ${{ matrix.board }}
+        run: |
+          ./build/compile.sh ravenos \
+              BOARD="${{ matrix.board }}" \
+              KLIPPER_VARIANT="${{ matrix.klipper_variant }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RavenOS-${{ matrix.board }}-${{ matrix.klipper_variant }}
+          path: build/output/images/*
+          compression-level: 9

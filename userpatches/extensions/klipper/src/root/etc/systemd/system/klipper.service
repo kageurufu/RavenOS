@@ -1,0 +1,17 @@
+#Systemd service file for klipper
+[Unit]
+Description=Starts klipper on startup
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=simple
+User=raven
+RemainAfterExit=yes
+WorkingDirectory=/home/raven/klipper/
+EnvironmentFile=/home/raven/printer_data/systemd/klipper.env
+ExecStart=/home/raven/klippy-env/bin/python klippy/klippy.py $KLIPPER_ARGS
+Restart=always
+RestartSec=10
