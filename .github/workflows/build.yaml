@@ -1,0 +1,38 @@
+name: "Build RavenOS"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        board:
+            - uefi-x86
+            - rpi4b
+            - bigtreetech-cb1
+            - bigtreetech-cb2
+
+    runs-on: ubuntu-latest
+    steps:
+        - uses: actions/checkout@v4
+          with:
+            submodules: true
+      
+        - name: Setup our userpatches
+          run: |
+            rm -rf $(pwd)/build/userpatches
+            ln -sf $(pwd)/userpatches $(pwd)/build/userpatches
+
+        - name: Build for ${{ matrix.board }}
+          run: |
+            cd build
+            
+            ./compile.sh ravenos \
+                BOARD="${{ matrix.board }}" \
+                COMPRESS_OUTPUTIMAGE=sha,img,xz
+        
+        - uses: actions/upload-artifact@v4
+          with:
+            name: ${{ matrix.board }}
+            path: build/output/images/*

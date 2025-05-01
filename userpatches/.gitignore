@@ -1,7 +1,7 @@
 # Armbian generated files
-u-boot/
-misc/
-kernel/
-crust/
-atf/
+/u-boot/
+/misc/
+/kernel/
+/crust/
+/atf/
 config-example.conf
