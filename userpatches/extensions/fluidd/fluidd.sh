@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# enable_extension nginx
+enable_extension nginx
+enable_extension fluidd-config
 
 function pre_customize_image__install_fluidd() {
 	display_alert "Extension $EXTENSION: Installing fluidd"
